@@ -1,24 +1,26 @@
-import data from "../data/patients";
-import { Patient, NoSsnPatient, Gender } from "../types";
+//import data from "../data/patients";
+import patients from "../data/patients_full";
+import { Patient, NoSsnPatient, Gender, Entry } from "../types";
 
 
 const getPatients = (): Patient[] => {
-    return data.map(patient => toPatient(patient));
+    return patients.map(patient => toPatient(patient));
 };
 
 const getPatientsNoSSN = (): NoSsnPatient[] => {
-    return getPatients().map(({id, name, dateOfBirth, gender, occupation}) =>
+    return getPatients().map(({id, name, dateOfBirth, gender, occupation, entries}) =>
     ({id,
     name,
     dateOfBirth,
     gender,
-    occupation
+    occupation,
+    entries
     })
     );
 };
 
 const findPatientById = (id: string): Patient | undefined => {
-    const patient = data.find(p => p.id === id);
+    const patient = patients.find(p => p.id === id);
     return toPatient(patient);
 };
 
@@ -60,13 +62,19 @@ const toPatient = (object: unknown): Patient => {
         id = object.id;
     }
     if('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object){
-    const newPatient = {
+        let entries: Entry[] = [];
+        if('entries' in object){
+            entries = object.entries as Entry[];
+        }
+    
+        const newPatient = {
             id : toString(id),
             name: toString(object.name),
             dateOfBirth: toString(object.dateOfBirth),
             ssn: toString(object.ssn),
             gender: parseGender(object.gender),
-            occupation: toString(object.occupation)
+            occupation: toString(object.occupation),
+            entries: entries
         };
     //data.push(newPatient);
     //console.log(data);
